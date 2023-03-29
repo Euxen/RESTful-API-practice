@@ -76,6 +76,64 @@ app.route("/articles")
     }
 );
 
+app.route("/articles/:articleTitle")
+.get(
+    async(req,res)=>{
+
+        try{
+        const foundArticle= await Article.findOne({title: req.params.articleTitle});
+            // console.log(foundArticles);
+            res.send(foundArticle);
+        }catch(err){
+            // console.log(err);
+            res.send("There's no such article");
+        }
+    }
+)
+.put(
+    async(req, res) => {
+        try{
+        
+        await Article.replaceOne(
+            {title: req.params.articleTitle},
+            {title: req.body.title, content: req.body.content},
+            {overwrite: true}
+        )
+        res.send("Succesfully updated existing article")
+        }
+        catch(err){
+            console.log(err);
+        }
+    }
+)
+.patch(
+    async(req, res) => {
+        try{
+        
+        await Article.findOneAndUpdate(
+            {title: req.params.articleTitle},
+            {$set: req.body}
+        )
+        res.send("Succesfully updated existing article")
+        }
+        catch(err){
+            console.log(err);
+        }
+    }
+)
+.delete(
+    async (req, res) => {
+        try{
+            await Article.deleteOne({
+                title: req.params.articleTitle
+            })
+                res.send("Article succesfully deleted!");
+            }
+            catch(err){
+                res.send(err);
+            }
+    }
+);
 
 app.listen(3000, function() {
   console.log("Server started on port 3000");
